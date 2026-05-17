@@ -1,60 +1,109 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { Transaction, Goal } from '../types';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
+import { Transaction } from '../types';
+import { useAuth } from './AuthContext';
+import { Alert } from 'react-native';
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
 
 interface ExpenseContextType {
   transactions: Transaction[];
-  goals: Goal[];
-  deleteTransaction: (id: string) => void;
-  addTransaction: (transaction: Omit<Transaction, 'id' | 'date'>) => void;
-  searchTransactions: (query: string) => Transaction[];
-  addGoal: (goal: Goal) => void;
+  addTransaction: (tx: Omit<Transaction, 'id' | 'date'>) => Promise<boolean>;
+  deleteTransaction: (id: string | number) => Promise<boolean>;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  filteredTransactions: Transaction[];
+  fetchTransactions: () => Promise<void>;
 }
-
-const mockTransactions: Transaction[] = [
-  { id: '1', amount: 50.0, category: 'Food', date: '2026-05-16', description: 'Lunch at Cafe', type: 'expense' },
-  { id: '2', amount: 1200.0, category: 'Salary', date: '2026-05-15', description: 'May Salary', type: 'income' },
-  { id: '3', amount: 30.0, category: 'Transport', date: '2026-05-14', description: 'Uber ride', type: 'expense' },
-  { id: '4', amount: 200.0, category: 'Shopping', date: '2026-05-12', description: 'Groceries', type: 'expense' },
-];
-
-const mockGoals: Goal[] = [
-  { id: '1', title: 'Vacation Fund', targetAmount: 2000, currentAmount: 850, deadline: '2026-12-01' },
-  { id: '2', title: 'New Laptop', targetAmount: 1500, currentAmount: 300, deadline: '2026-09-01' },
-];
 
 const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
 
 export const ExpenseProvider = ({ children }: { children: ReactNode }) => {
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
-  const [goals, setGoals] = useState<Goal[]>(mockGoals);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const { token, user } = useAuth();
 
-  const deleteTransaction = (id: string) => {
-    setTransactions((prev) => prev.filter(t => t.id !== id));
+  const fetchTransactions = useCallback(async () => {
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_URL}/api/transactions`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Map database IDs to strings to ensure compatibility across app
+        const formattedData = data.map((t: any) => ({ ...t, id: String(t.id) }));
+        setTransactions(formattedData);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchTransactions();
+    } else {
+      setTransactions([]); // Clear on logout
+    }
+  }, [token, fetchTransactions]);
+
+  const addTransaction = async (tx: Omit<Transaction, 'id' | 'date'>) => {
+    if (!token) return false;
+    try {
+      const response = await fetch(`${API_URL}/api/transactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(tx)
+      });
+      
+      const newTx = await response.json();
+      if (response.ok) {
+        setTransactions([{ ...newTx, id: String(newTx.id) }, ...transactions]);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      Alert.alert('Error', 'Failed to add transaction');
+      return false;
+    }
   };
 
-  const addTransaction = (transaction: Omit<Transaction, 'id' | 'date'>) => {
-    const newTransaction: Transaction = {
-      ...transaction,
-      id: Math.random().toString(),
-      date: new Date().toISOString().split('T')[0]
-    };
-    setTransactions((prev) => [newTransaction, ...prev]);
+  const deleteTransaction = async (id: string | number) => {
+    if (!token) return false;
+    try {
+      const response = await fetch(`${API_URL}/api/transactions/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        setTransactions(transactions.filter(t => String(t.id) !== String(id)));
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
   };
 
-  const searchTransactions = (query: string) => {
-    if (!query.trim()) return transactions;
-    return transactions.filter(t => 
-      t.description.toLowerCase().includes(query.toLowerCase()) || 
-      t.category.toLowerCase().includes(query.toLowerCase())
-    );
-  };
-
-  const addGoal = (goal: Goal) => {
-    setGoals((prev) => [goal, ...prev]);
-  };
+  const filteredTransactions = transactions.filter(t => 
+    t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <ExpenseContext.Provider value={{ transactions, goals, deleteTransaction, addTransaction, searchTransactions, addGoal }}>
+    <ExpenseContext.Provider value={{
+      transactions,
+      addTransaction,
+      deleteTransaction,
+      searchQuery,
+      setSearchQuery,
+      filteredTransactions,
+      fetchTransactions
+    }}>
       {children}
     </ExpenseContext.Provider>
   );
@@ -62,8 +111,6 @@ export const ExpenseProvider = ({ children }: { children: ReactNode }) => {
 
 export const useExpense = () => {
   const context = useContext(ExpenseContext);
-  if (context === undefined) {
-    throw new Error('useExpense must be used within an ExpenseProvider');
-  }
+  if (context === undefined) throw new Error('useExpense must be used within ExpenseProvider');
   return context;
 };

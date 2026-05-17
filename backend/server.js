@@ -14,7 +14,10 @@ initDb();
 
 // Routes
 const authRoutes = require('./src/routes/authRoutes');
+const transactionRoutes = require('./src/routes/transactionRoutes');
+
 app.use('/api/auth', authRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
