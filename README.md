@@ -44,3 +44,50 @@ This is a full-stack monorepo containing an Expo (React Native) frontend and a N
    ```bash
    npm start
    ```
+
+## 4. Git Workflow for the Team
+
+This repository uses `dev-branch` as the main development base. We have individual branches for each team member: `von-branch`, `trina-branch`, and `claude-branch`.
+
+### Step-by-Step Guide: Pushing to Your Own Branch
+
+**1. Clone the repository (if you haven't already):**
+```bash
+git clone https://github.com/vonarch/expense-tracker.git
+cd expense-tracker
+```
+
+**2. Check out your specific branch:**
+Replace `[your-branch-name]` with your actual branch (e.g., `von-branch`).
+```bash
+git checkout [your-branch-name]
+```
+*(Verify you are on the right branch by typing `git branch`. Your branch should have a `*` next to it.)*
+
+**3. Pull the latest changes:**
+It's always a good idea to pull before you start working to ensure your local branch is up to date.
+```bash
+git pull origin [your-branch-name]
+```
+
+**4. Make your code changes:**
+(Add features, fix bugs, etc. in your code editor.)
+
+**5. Stage your changes:**
+This tells Git you want to include all your modified files in the next commit.
+```bash
+git add .
+```
+
+**6. Commit your changes:**
+Write a short, descriptive message explaining what you did.
+```bash
+git commit -m "Added the login screen"
+```
+
+**7. Push to your branch on GitHub:**
+```bash
+git push origin [your-branch-name]
+```
+
+**Note:** Once you're ready to combine your work with the rest of the team, go to GitHub and open a **Pull Request (PR)** from your branch into `dev-branch`.
