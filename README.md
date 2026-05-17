@@ -24,27 +24,28 @@ This is a full-stack monorepo containing an Expo (React Native) frontend and a N
 3. Create a new database named `expense_tracker`.
 4. *(Note: Our backend now auto-creates the tables for you! Just start the Node server in Step 2).*
 
-## 2. Backend Setup
+## 2. How to Run the Application (Important: Two Terminals Required!)
+
+In modern full-stack development, you must run both the Frontend and the Backend at the same time in two separate terminal windows.
+
+### Terminal 1: The Backend (Node.js & MySQL)
 1. Open a terminal and navigate to the backend directory:
    ```bash
    cd backend
    ```
-2. Install dependencies:
+2. Install dependencies (if you haven't already):
    ```bash
    npm install
    ```
-3. Copy `.env.example` to a new file named `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-   *(Update the `.env` values if your local MySQL has a password)*
-4. Start the server (This will automatically generate your database tables!):
+3. Copy `.env.example` to a new file named `.env` and fill in your DB credentials if necessary.
+4. Start the server:
    ```bash
    npm run dev
    ```
+   *(You should see "Server running on port 5000" and "Connected to MySQL")*
 
-## 3. Frontend Setup
-1. Open a new terminal and navigate to the frontend directory:
+### Terminal 2: The Frontend (Expo React Native)
+1. Open a **new, second terminal** (keep the first one running!) and navigate to the frontend:
    ```bash
    cd frontend
    ```
@@ -52,9 +53,9 @@ This is a full-stack monorepo containing an Expo (React Native) frontend and a N
    ```bash
    npm install
    ```
-3. Start the Expo app:
+3. Start the Expo mobile server (Use `-c` to clear the cache and ensure it loads your IP address correctly):
    ```bash
-   npm start
+   npm start -- -c
    ```
 
 ## 4. How to Test on Your Phone (Expo Go)
