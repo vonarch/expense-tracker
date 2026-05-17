@@ -2,6 +2,18 @@
 
 This is a full-stack monorepo containing an Expo (React Native) frontend and a Node.js (Express) backend.
 
+## Tech Stack
+**Frontend:**
+- **React Native / Expo:** Core mobile framework
+- **Expo Router:** File-based navigation
+- **Tailwind CSS (NativeWind):** Styling system
+- **TypeScript:** Type safety
+
+**Backend:**
+- **Node.js & Express.js:** API server
+- **MySQL (via XAMPP):** Relational database
+- **JWT (JSON Web Tokens):** Authentication
+
 ## Prerequisites
 - **Node.js** installed on your machine
 - **XAMPP** installed (for MySQL Database)
