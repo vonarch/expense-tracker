@@ -42,6 +42,20 @@ async function initDb() {
       );
     `);
 
+    // Create Goals Table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS goals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        target_amount DECIMAL(10, 2) NOT NULL,
+        current_amount DECIMAL(10, 2) DEFAULT 0.00,
+        deadline DATE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+    `);
+
     console.log('Database and tables initialized successfully!');
     await connection.end();
   } catch (error) {
