@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, StyleSheet, Text } from 'react-native';
+import { View, TextInput, FlatList, Text } from 'react-native';
 import { useExpense } from '../context/ExpenseContext';
 import TransactionCard from '../components/TransactionCard';
-import { Colors } from '../constants/Colors';
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
@@ -11,50 +10,24 @@ export default function SearchScreen() {
   const results = searchTransactions(query);
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       <TextInput
-        style={styles.searchInput}
+        className="bg-white px-4 py-3 m-4 rounded-lg text-base border border-border"
         placeholder="Search by description or category..."
         value={query}
         onChangeText={setQuery}
       />
       
       {query.trim() !== '' && results.length === 0 ? (
-        <Text style={styles.emptyText}>No transactions found for "{query}"</Text>
+        <Text className="text-center mt-5 text-textLight text-base">No transactions found for "{query}"</Text>
       ) : (
         <FlatList
           data={results}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <TransactionCard transaction={item} />}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  searchInput: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    margin: 16,
-    borderRadius: 8,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  emptyText: {
-    textAlign: 'center',
-    marginTop: 20,
-    color: Colors.textLight,
-    fontSize: 16,
-  },
-  list: {
-    paddingBottom: 20,
-  }
-});

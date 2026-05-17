@@ -1,46 +1,21 @@
 import React from 'react';
-import { View, FlatList, StyleSheet, Text } from 'react-native';
+import { View, FlatList, Text } from 'react-native';
 import { useExpense } from '../../context/ExpenseContext';
 import TransactionCard from '../../components/TransactionCard';
-import { Colors } from '../../constants/Colors';
 
 export default function HistoryScreen() {
   const { transactions } = useExpense();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Transaction History</Text>
-      <Text style={styles.subtext}>Long press any transaction to delete it.</Text>
+    <View className="flex-1 bg-background">
+      <Text className="text-2xl font-bold mx-4 mt-5 mb-1 text-text">Transaction History</Text>
+      <Text className="text-sm text-textLight mx-4 mb-3">Long press any transaction to delete it.</Text>
       <FlatList
         data={transactions}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <TransactionCard transaction={item} />}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={{ paddingBottom: 20 }}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginHorizontal: 16,
-    marginTop: 20,
-    marginBottom: 4,
-    color: Colors.text,
-  },
-  subtext: {
-    fontSize: 14,
-    color: Colors.textLight,
-    marginHorizontal: 16,
-    marginBottom: 12,
-  },
-  list: {
-    paddingBottom: 20,
-  }
-});

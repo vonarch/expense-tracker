@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Transaction } from '../types';
-import { Colors } from '../constants/Colors';
 import { useExpense } from '../context/ExpenseContext';
 
 interface Props {
@@ -24,60 +23,20 @@ export default function TransactionCard({ transaction }: Props) {
   };
 
   return (
-    <TouchableOpacity onLongPress={handleDelete} style={styles.card}>
-      <View style={styles.leftContent}>
-        <View style={[styles.iconPlaceholder, { backgroundColor: isIncome ? Colors.success : Colors.danger }]} />
+    <TouchableOpacity 
+      onLongPress={handleDelete} 
+      className="flex-row justify-between items-center bg-cardBackground p-4 my-2 mx-4 rounded-xl shadow-sm elevation-sm"
+    >
+      <View className="flex-row items-center">
+        <View className={`w-10 h-10 rounded-full mr-3 opacity-20 ${isIncome ? 'bg-success' : 'bg-danger'}`} />
         <View>
-          <Text style={styles.description}>{transaction.description}</Text>
-          <Text style={styles.category}>{transaction.category} • {transaction.date}</Text>
+          <Text className="text-base font-semibold text-text">{transaction.description}</Text>
+          <Text className="text-xs text-textLight mt-1">{transaction.category} • {transaction.date}</Text>
         </View>
       </View>
-      <Text style={[styles.amount, { color: isIncome ? Colors.success : Colors.text }]}>
+      <Text className={`text-base font-bold ${isIncome ? 'text-success' : 'text-text'}`}>
         {isIncome ? '+' : '-'}${transaction.amount.toFixed(2)}
       </Text>
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
-  leftContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconPlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-    opacity: 0.2,
-  },
-  description: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text,
-  },
-  category: {
-    fontSize: 12,
-    color: Colors.textLight,
-    marginTop: 4,
-  },
-  amount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
