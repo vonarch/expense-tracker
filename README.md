@@ -45,7 +45,25 @@ This is a full-stack monorepo containing an Expo (React Native) frontend and a N
    npm start
    ```
 
-## 4. Git Workflow for the Team
+## 4. How to Test on Your Phone (Expo Go)
+
+You can easily test the mobile app directly on your physical smartphone using the **Expo Go** app.
+
+**1. Download the Expo Go app**
+- **Android:** Download from the Google Play Store
+- **iPhone:** Download from the Apple App Store
+
+**2. Connect to the same network**
+Ensure your smartphone and your computer are connected to the exact same Wi-Fi network.
+
+**3. Scan the QR Code**
+When you run `npm start` in the `frontend` folder (from Step 3 above), a large QR code will appear in your terminal.
+- **On Android:** Open the Expo Go app and tap "Scan QR Code".
+- **On iPhone:** Open your regular Camera app, point it at the QR code, and tap the link that appears.
+
+The app will load on your phone. Any time you save a code file on your computer, the app on your phone will automatically refresh!
+
+## 5. Git Workflow for the Team
 
 This repository uses `dev-branch` as the main development base. We have individual branches for each team member: `von-branch`, `trina-branch`, and `claude-branch`.
 
