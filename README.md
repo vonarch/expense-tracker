@@ -73,19 +73,25 @@ git pull origin [your-branch-name]
 **4. Make your code changes:**
 (Add features, fix bugs, etc. in your code editor.)
 
-**5. Stage your changes:**
+**5. Double-check your changes:**
+Use this command to verify which branch you are on and see exactly which files you have modified before staging them.
+```bash
+git status
+```
+
+**6. Stage your changes:**
 This tells Git you want to include all your modified files in the next commit.
 ```bash
 git add .
 ```
 
-**6. Commit your changes:**
+**7. Commit your changes:**
 Write a short, descriptive message explaining what you did.
 ```bash
 git commit -m "Added the login screen"
 ```
 
-**7. Push to your branch on GitHub:**
+**8. Push to your branch on GitHub:**
 ```bash
 git push origin [your-branch-name]
 ```
