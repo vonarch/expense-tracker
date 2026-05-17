@@ -5,6 +5,7 @@ interface ExpenseContextType {
   transactions: Transaction[];
   goals: Goal[];
   deleteTransaction: (id: string) => void;
+  addTransaction: (transaction: Omit<Transaction, 'id' | 'date'>) => void;
   searchTransactions: (query: string) => Transaction[];
   addGoal: (goal: Goal) => void;
 }
@@ -31,6 +32,15 @@ export const ExpenseProvider = ({ children }: { children: ReactNode }) => {
     setTransactions((prev) => prev.filter(t => t.id !== id));
   };
 
+  const addTransaction = (transaction: Omit<Transaction, 'id' | 'date'>) => {
+    const newTransaction: Transaction = {
+      ...transaction,
+      id: Math.random().toString(),
+      date: new Date().toISOString().split('T')[0]
+    };
+    setTransactions((prev) => [newTransaction, ...prev]);
+  };
+
   const searchTransactions = (query: string) => {
     if (!query.trim()) return transactions;
     return transactions.filter(t => 
@@ -44,7 +54,7 @@ export const ExpenseProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ExpenseContext.Provider value={{ transactions, goals, deleteTransaction, searchTransactions, addGoal }}>
+    <ExpenseContext.Provider value={{ transactions, goals, deleteTransaction, addTransaction, searchTransactions, addGoal }}>
       {children}
     </ExpenseContext.Provider>
   );
