@@ -22,7 +22,7 @@ This is a full-stack monorepo containing an Expo (React Native) frontend and a N
 1. Open the XAMPP Control Panel and Start **MySQL** and **Apache**.
 2. Click the "Admin" button next to MySQL to open **phpMyAdmin**.
 3. Create a new database named `expense_tracker`.
-4. *(SQL import instructions will go here once we define the tables)*
+4. *(Note: Our backend now auto-creates the tables for you! Just start the Node server in Step 2).*
 
 ## 2. Backend Setup
 1. Open a terminal and navigate to the backend directory:
@@ -38,7 +38,7 @@ This is a full-stack monorepo containing an Expo (React Native) frontend and a N
    cp .env.example .env
    ```
    *(Update the `.env` values if your local MySQL has a password)*
-4. Start the server:
+4. Start the server (This will automatically generate your database tables!):
    ```bash
    npm run dev
    ```
@@ -79,9 +79,11 @@ The app will load on your phone. Any time you save a code file on your computer,
 
 This repository uses `dev-branch` as the main development base. We have individual branches for each team member: `von-branch`, `trina-branch`, and `claude-branch`.
 
-### Step-by-Step Guide: Pushing to Your Own Branch
+### 🔄 Getting the Latest Updates (CRITICAL)
 
-**1. Clone the repository (if you haven't already):**
+Whenever you start working for the day, or after someone else has added new features, you **must** pull the latest code from `dev-branch` so you aren't working on old code!
+
+**1. Clone the repo (if it's your first time):**
 ```bash
 git clone https://github.com/vonarch/expense-tracker.git
 cd expense-tracker
@@ -92,36 +94,38 @@ Replace `[your-branch-name]` with your actual branch (e.g., `von-branch`).
 ```bash
 git checkout [your-branch-name]
 ```
-*(Verify you are on the right branch by typing `git branch`. Your branch should have a `*` next to it.)*
 
-**3. Pull the latest changes:**
-It's always a good idea to pull before you start working to ensure your local branch is up to date.
+**3. Pull the latest updates from dev-branch:**
+Run this every single time you sit down to code!
 ```bash
-git pull origin [your-branch-name]
+git pull origin dev-branch
 ```
+*(This merges the newest team code into your personal branch so you are fully up to date!)*
 
-**4. Make your code changes:**
+### 🚀 Pushing Your Code
+
+**1. Make your code changes:**
 (Add features, fix bugs, etc. in your code editor.)
 
-**5. Double-check your changes:**
+**2. Double-check your changes:**
 Use this command to verify which branch you are on and see exactly which files you have modified before staging them.
 ```bash
 git status
 ```
 
-**6. Stage your changes:**
+**3. Stage your changes:**
 This tells Git you want to include all your modified files in the next commit.
 ```bash
 git add .
 ```
 
-**7. Commit your changes:**
+**4. Commit your changes:**
 Write a short, descriptive message explaining what you did.
 ```bash
 git commit -m "Added the login screen"
 ```
 
-**8. Push to your branch on GitHub:**
+**5. Push to your branch on GitHub:**
 ```bash
 git push origin [your-branch-name]
 ```
