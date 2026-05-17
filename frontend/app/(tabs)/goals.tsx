@@ -1,20 +1,19 @@
 import React from 'react';
 import { View, FlatList, StyleSheet, Text } from 'react-native';
 import { useExpense } from '../../context/ExpenseContext';
-import TransactionCard from '../../components/TransactionCard';
+import GoalCard from '../../components/GoalCard';
 import { Colors } from '../../constants/Colors';
 
-export default function HistoryScreen() {
-  const { transactions } = useExpense();
+export default function GoalsScreen() {
+  const { goals } = useExpense();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Transaction History</Text>
-      <Text style={styles.subtext}>Long press any transaction to delete it.</Text>
+      <Text style={styles.header}>My Goals</Text>
       <FlatList
-        data={transactions}
+        data={goals}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <TransactionCard transaction={item} />}
+        renderItem={({ item }) => <GoalCard goal={item} />}
         contentContainerStyle={styles.list}
       />
     </View>
@@ -29,16 +28,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginHorizontal: 16,
-    marginTop: 20,
-    marginBottom: 4,
+    margin: 16,
     color: Colors.text,
-  },
-  subtext: {
-    fontSize: 14,
-    color: Colors.textLight,
-    marginHorizontal: 16,
-    marginBottom: 12,
   },
   list: {
     paddingBottom: 20,
