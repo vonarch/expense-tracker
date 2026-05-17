@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'expo-router';
 
@@ -12,13 +12,22 @@ export default function LoginScreen() {
   const { login, signup } = useAuth();
   const router = useRouter();
 
-  const handleSubmit = () => {
-    if (isLogin) {
-      login(email, password);
-    } else {
-      signup(email, password, name);
+  const handleAuth = async () => {
+    if (!email || !password || (!isLogin && !name)) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
     }
-    router.replace('/(tabs)');
+
+    let success = false;
+    if (isLogin) {
+      success = await login(email, password);
+    } else {
+      success = await signup(email, password, name);
+    }
+
+    if (success) {
+      router.replace('/(tabs)');
+    }
   };
 
   return (
@@ -60,7 +69,7 @@ export default function LoginScreen() {
 
         <TouchableOpacity 
           className="bg-primary py-4 rounded-xl items-center mb-4"
-          onPress={handleSubmit}
+          onPress={handleAuth}
         >
           <Text className="text-white text-base font-bold">{isLogin ? 'Sign In' : 'Sign Up'}</Text>
         </TouchableOpacity>
