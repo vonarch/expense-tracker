@@ -1,3 +1,15 @@
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  type: 'income' | 'expense';
+}
+
 export interface Transaction {
   id: string;
   amount: number;

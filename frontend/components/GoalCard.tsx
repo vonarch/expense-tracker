@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Goal } from '../types';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { ApiError } from '../context/AuthContext';
 
 interface Props {
   goal: Goal;
@@ -17,7 +18,18 @@ export default function GoalCard({ goal, onContribute, onDelete }: Props) {
     if (!onDelete) return;
     Alert.alert('Delete Goal', `Remove "${goal.title}"?`, [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => onDelete(goal.id) },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await onDelete(goal.id);
+          } catch (err) {
+            const message = err instanceof ApiError ? err.message : 'Could not delete goal';
+            Alert.alert('Error', message);
+          }
+        },
+      },
     ]);
   };
 

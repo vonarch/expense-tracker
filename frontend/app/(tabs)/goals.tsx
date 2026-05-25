@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { useExpense } from '../../context/ExpenseContext';
 import GoalCard from '../../components/GoalCard';
+import { ApiError } from '../../context/AuthContext';
+
 export default function GoalsScreen() {
   const { goals, addGoal, updateGoalProgress, deleteGoal } = useExpense();
   const [addModalVisible, setAddModalVisible] = useState(false);
@@ -28,7 +30,7 @@ export default function GoalsScreen() {
     setDeadline('');
   };
 
-  const handleAddGoal = () => {
+  const handleAddGoal = async () => {
     const target = parseFloat(targetAmount);
     if (!title.trim()) {
       Alert.alert('Error', 'Please enter a goal title.');
@@ -38,25 +40,35 @@ export default function GoalsScreen() {
       Alert.alert('Error', 'Please enter a valid target amount.');
       return;
     }
-    addGoal({
-      title: title.trim(),
-      targetAmount: target,
-      deadline: deadline.trim() || undefined,
-    });
-    resetAddForm();
-    setAddModalVisible(false);
+    try {
+      await addGoal({
+        title: title.trim(),
+        targetAmount: target,
+        deadline: deadline.trim() || undefined,
+      });
+      resetAddForm();
+      setAddModalVisible(false);
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Could not create goal';
+      Alert.alert('Error', message);
+    }
   };
 
-  const handleContribute = () => {
+  const handleContribute = async () => {
     const amount = parseFloat(contributeAmount);
     if (!selectedGoalId || isNaN(amount) || amount <= 0) {
       Alert.alert('Error', 'Please enter a valid amount.');
       return;
     }
-    updateGoalProgress(selectedGoalId, amount);
-    setContributeAmount('');
-    setContributeModalVisible(false);
-    setSelectedGoalId(null);
+    try {
+      await updateGoalProgress(selectedGoalId, amount);
+      setContributeAmount('');
+      setContributeModalVisible(false);
+      setSelectedGoalId(null);
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Could not update goal';
+      Alert.alert('Error', message);
+    }
   };
 
   const openContribute = (id: string) => {
@@ -79,7 +91,7 @@ export default function GoalsScreen() {
         </TouchableOpacity>
       </View>
       <Text className="text-sm text-textLight mx-4 mb-3">
-        Tap to add funds · Long press to delete
+        Tap to add funds (deducts from your balance) · Long press to delete
       </Text>
 
       {goals.length === 0 ? (

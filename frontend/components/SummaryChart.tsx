@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { CategoryBreakdown } from '../types';
 import { formatCurrency } from '../utils/formatters';
+import { Colors } from '../constants/Colors';
 
 interface Props {
   data: CategoryBreakdown[];
@@ -11,9 +12,9 @@ interface Props {
 export default function SummaryChart({ data, title = 'Spending by Category' }: Props) {
   if (data.length === 0) {
     return (
-      <View className="bg-cardBackground mx-4 p-4 rounded-xl">
-        <Text className="text-base font-semibold text-text mb-2">{title}</Text>
-        <Text className="text-sm text-textLight">No expense data for this period.</Text>
+      <View style={styles.card}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.emptyText}>No expense data for this period.</Text>
       </View>
     );
   }
@@ -21,23 +22,18 @@ export default function SummaryChart({ data, title = 'Spending by Category' }: P
   const maxTotal = Math.max(...data.map((d) => d.total));
 
   return (
-    <View className="bg-cardBackground mx-4 p-4 rounded-xl shadow-sm">
-      <Text className="text-base font-semibold text-text mb-4">{title}</Text>
+    <View style={styles.card}>
+      <Text style={styles.title}>{title}</Text>
       {data.map((item) => {
         const widthPercent = maxTotal > 0 ? (item.total / maxTotal) * 100 : 0;
         return (
-          <View key={item.category} className="mb-3">
-            <View className="flex-row justify-between mb-1">
-              <Text className="text-sm text-text">{item.category}</Text>
-              <Text className="text-sm font-medium text-textLight">
-                {formatCurrency(item.total)}
-              </Text>
+          <View key={item.category} style={styles.row}>
+            <View style={styles.labelRow}>
+              <Text style={styles.categoryLabel}>{item.category}</Text>
+              <Text style={styles.amountLabel}>{formatCurrency(item.total)}</Text>
             </View>
-            <View className="h-2.5 bg-border rounded-full overflow-hidden">
-              <View
-                className="h-full bg-primary rounded-full"
-                style={{ width: `${widthPercent}%` }}
-              />
+            <View style={styles.track}>
+              <View style={[styles.fill, { width: `${widthPercent}%` }]} />
             </View>
           </View>
         );
@@ -45,3 +41,50 @@ export default function SummaryChart({ data, title = 'Spending by Category' }: P
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: Colors.cardBackground,
+    marginHorizontal: 16,
+    padding: 16,
+    borderRadius: 12,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.text,
+    marginBottom: 16,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: Colors.textLight,
+  },
+  row: {
+    marginBottom: 12,
+  },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  categoryLabel: {
+    fontSize: 14,
+    color: Colors.text,
+  },
+  amountLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: Colors.textLight,
+  },
+  track: {
+    height: 10,
+    backgroundColor: Colors.border,
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  fill: {
+    height: '100%',
+    backgroundColor: Colors.primary,
+    borderRadius: 999,
+  },
+});

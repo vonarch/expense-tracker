@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useExpense } from '../../context/ExpenseContext';
 import SummaryChart from '../../components/SummaryChart';
@@ -9,9 +9,17 @@ import { formatCurrency } from '../../utils/formatters';
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const { getDashboardStats, goals } = useExpense();
+  const { getDashboardStats, goals, isLoading } = useExpense();
   const stats = getDashboardStats();
   const topGoals = goals.slice(0, 2);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 24 }}>

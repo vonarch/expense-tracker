@@ -1,6 +1,6 @@
 import { Share, Alert } from 'react-native';
 import { Transaction, DatePeriod } from '../types';
-import { parseDate } from './formatters';
+import { parseDate, formatCurrency } from './formatters';
 
 export function isInPeriod(
   dateStr: string,
@@ -84,9 +84,9 @@ export async function exportTransactions(
   const message = [
     `Expense Tracker Export (${periodLabel})`,
     `Transactions: ${transactions.length}`,
-    `Total Income: $${summary.income.toFixed(2)}`,
-    `Total Expenses: $${summary.expense.toFixed(2)}`,
-    `Net: $${(summary.income - summary.expense).toFixed(2)}`,
+    `Total Income: ${formatCurrency(summary.income)}`,
+    `Total Expenses: ${formatCurrency(summary.expense)}`,
+    `Net: ${formatCurrency(summary.income - summary.expense)}`,
     '',
     '--- CSV Data ---',
     csv,

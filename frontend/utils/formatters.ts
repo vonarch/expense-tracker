@@ -1,10 +1,15 @@
 export function formatCurrency(amount: number): string {
-  return `$${amount.toFixed(2)}`;
+  return new Intl.NumberFormat('en-PH', {
+    style: 'currency',
+    currency: 'PHP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 }
 
 export function formatDate(dateStr: string): string {
   const date = parseDate(dateStr);
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('en-PH', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',

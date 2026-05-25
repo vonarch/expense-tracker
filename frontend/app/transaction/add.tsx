@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,24 +8,32 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { useExpense } from '../../context/ExpenseContext';
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../../constants/Tags';
 import { toDateString } from '../../utils/formatters';
+import { ApiError } from '../../context/AuthContext';
 
 export default function AddTransactionScreen() {
   const router = useRouter();
-  const { addTransaction } = useExpense();
+  const { addTransaction, getCategoriesByType, isLoading } = useExpense();
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('Food');
+  const [category, setCategory] = useState('');
   const [date, setDate] = useState(toDateString(new Date()));
+  const [saving, setSaving] = useState(false);
 
-  const categories = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  const categories = getCategoriesByType(type);
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (categories.length > 0 && !categories.includes(category)) {
+      setCategory(categories[0]);
+    }
+  }, [type, categories, category]);
+
+  const handleSave = async () => {
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
       Alert.alert('Error', 'Please enter a valid amount.');
@@ -35,20 +43,40 @@ export default function AddTransactionScreen() {
       Alert.alert('Error', 'Please enter a description.');
       return;
     }
+    if (!category) {
+      Alert.alert('Error', 'Please select a category.');
+      return;
+    }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       Alert.alert('Error', 'Date must be in YYYY-MM-DD format.');
       return;
     }
 
-    addTransaction({
-      amount: parsedAmount,
-      category,
-      date,
-      description: description.trim(),
-      type,
-    });
-    router.back();
+    setSaving(true);
+    try {
+      await addTransaction({
+        amount: parsedAmount,
+        category,
+        date,
+        description: description.trim(),
+        type,
+      });
+      router.back();
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Could not save transaction';
+      Alert.alert('Error', message);
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (isLoading && categories.length === 0) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -62,10 +90,7 @@ export default function AddTransactionScreen() {
             {(['expense', 'income'] as const).map((t) => (
               <TouchableOpacity
                 key={t}
-                onPress={() => {
-                  setType(t);
-                  setCategory(t === 'income' ? 'Salary' : 'Food');
-                }}
+                onPress={() => setType(t)}
                 className={`flex-1 py-3 rounded-lg items-center ${
                   type === t ? 'bg-primary' : 'bg-cardBackground border border-border'
                 }`}
@@ -77,7 +102,7 @@ export default function AddTransactionScreen() {
             ))}
           </View>
 
-          <Text className="text-sm font-medium text-text mb-1">Amount</Text>
+          <Text className="text-sm font-medium text-text mb-1">Amount (₱)</Text>
           <TextInput
             className="bg-cardBackground border border-border rounded-lg px-4 py-3 mb-4 text-text"
             placeholder="0.00"
@@ -95,21 +120,29 @@ export default function AddTransactionScreen() {
           />
 
           <Text className="text-sm font-medium text-text mb-2">Category</Text>
-          <View className="flex-row flex-wrap gap-2 mb-4">
-            {categories.map((cat) => (
-              <TouchableOpacity
-                key={cat}
-                onPress={() => setCategory(cat)}
-                className={`px-3 py-2 rounded-full ${
-                  category === cat ? 'bg-primary' : 'bg-cardBackground border border-border'
-                }`}
-              >
-                <Text className={category === cat ? 'text-white text-sm' : 'text-text text-sm'}>
-                  {cat}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          {categories.length === 0 ? (
+            <Text className="text-sm text-textLight mb-4">
+              No categories yet. Add some in Settings → Manage Categories.
+            </Text>
+          ) : (
+            <View className="flex-row flex-wrap gap-2 mb-4">
+              {categories.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  onPress={() => setCategory(cat)}
+                  className={`px-3 py-2 rounded-full ${
+                    category === cat ? 'bg-primary' : 'bg-cardBackground border border-border'
+                  }`}
+                >
+                  <Text
+                    className={category === cat ? 'text-white text-sm' : 'text-text text-sm'}
+                  >
+                    {cat}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
 
           <Text className="text-sm font-medium text-text mb-1">Date</Text>
           <TextInput
@@ -121,9 +154,14 @@ export default function AddTransactionScreen() {
 
           <TouchableOpacity
             onPress={handleSave}
+            disabled={saving}
             className="bg-primary py-3 rounded-lg items-center"
           >
-            <Text className="text-white font-semibold text-base">Save Transaction</Text>
+            {saving ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white font-semibold text-base">Save Transaction</Text>
+            )}
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
