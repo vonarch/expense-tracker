@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   FlatList,
@@ -10,11 +10,19 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useExpense } from '../../context/ExpenseContext';
+import { useAuth } from '../../context/AuthContext';
+import { useTour } from '../../context/TourContext';
+import TourTooltip from '../../components/TourTooltip';
 import GoalCard from '../../components/GoalCard';
 import { ApiError } from '../../context/AuthContext';
 
 export default function GoalsScreen() {
+  const router = useRouter();
+  const { tour } = useLocalSearchParams<{ tour?: string }>();
+  const { user } = useAuth();
+  const { step, next, complete } = useTour();
   const { goals, addGoal, updateGoalProgress, deleteGoal } = useExpense();
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [contributeModalVisible, setContributeModalVisible] = useState(false);
@@ -93,6 +101,19 @@ export default function GoalsScreen() {
       <Text className="text-sm text-textLight mx-4 mb-3">
         Tap to add funds (deducts from your balance) · Long press to delete
       </Text>
+
+      <TourTooltip
+        visible={step === 'goals'}
+        title="Savings Goals"
+        body={'Tap "+ Add" to create a goal with a target amount and optional deadline. Tap a goal card to add funds toward it. Long-press a goal to delete it.'}
+        stepLabel="3 of 4"
+        anchorTop={210}
+        onNext={() => {
+          next('goals');
+          router.push({ pathname: '/(tabs)/settings', params: { tour: '1' } });
+        }}
+        onSkip={complete}
+      />
 
       {goals.length === 0 ? (
         <Text className="text-center text-textLight mt-10 mx-4">

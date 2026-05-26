@@ -13,6 +13,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuth, ApiError } from '../../context/AuthContext';
 import { getApiBaseUrl } from '../../constants/Api';
+import { useOnboarding } from '../../hooks/useOnboarding';
 import { apiFetch } from '../../services/api';
 
 export default function LoginScreen() {
@@ -55,10 +56,12 @@ export default function LoginScreen() {
     try {
       if (isRegister) {
         await register(name.trim(), email.trim(), password);
+        router.replace('/onboarding');
       } else {
         await login(email.trim(), password);
+        router.replace('/');
+        // router.replace('/(tabs)');
       }
-      router.replace('/(tabs)');
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'Something went wrong';
       Alert.alert('Error', message);

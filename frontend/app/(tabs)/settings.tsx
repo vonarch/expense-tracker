@@ -8,7 +8,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useExpense } from '../../context/ExpenseContext';
 import { useAuth, ApiError } from '../../context/AuthContext';
 import FilterModal from '../../components/FilterModal';
@@ -17,10 +17,18 @@ import { DATE_PERIOD_LABELS } from '../../constants/Tags';
 import { exportTransactions } from '../../utils/exportData';
 import { formatCurrency } from '../../utils/formatters';
 import { getApiBaseUrl } from '../../constants/Api';
+import { Ionicons } from '@expo/vector-icons';
+import { useOnboarding } from '../../hooks/useOnboarding';
+import { useTour } from '../../context/TourContext';
+import TourTooltip from '../../components/TourTooltip';
+import { Colors } from '../../constants/Colors';
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { tour } = useLocalSearchParams<{ tour?: string }>();
   const { user, logout } = useAuth();
+  const { resetAll } = useOnboarding();
+  const { step, complete } = useTour();
   const {
     getTransactionsByPeriod,
     categories,
@@ -79,6 +87,12 @@ export default function SettingsScreen() {
         },
       },
     ]);
+  };
+
+  const handleReplayOnboarding = async () => {
+    if (!user) return;
+    await resetAll(user.id);
+    router.replace('/onboarding');
   };
 
   const handleLogout = () => {
@@ -216,10 +230,27 @@ export default function SettingsScreen() {
               '• Long-press a transaction in History to delete it\n• Tap a goal to add funds\n• Long-press a goal to delete it\n• Add custom categories in Settings'
             )
           }
-          className="mt-3"
+className="mt-3"
         >
           <Text className="text-sm text-primary">View tips</Text>
         </TouchableOpacity>
+
+        <View className="border-t border-border mt-4 pt-4">
+          <TouchableOpacity
+            onPress={handleReplayOnboarding}
+            className="flex-row items-center justify-between"
+            activeOpacity={0.7}
+          >
+            <View className="flex-row items-center gap-3">
+              <Ionicons name="play-circle-outline" size={20} color={Colors.primary} />
+              <View>
+                <Text className="text-sm font-medium text-text">Replay App Tour</Text>
+                <Text className="text-xs text-textLight">Review the onboarding walkthrough</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={Colors.textLight} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TouchableOpacity
@@ -228,6 +259,17 @@ export default function SettingsScreen() {
       >
         <Text className="text-danger font-semibold">Sign Out</Text>
       </TouchableOpacity>
+
+      <TourTooltip
+        visible={step === 'categories'}
+        title="Custom Categories"
+        body="Create your own income and expense categories here — they appear when adding transactions. Tap the type toggle, enter a name, and hit Add. Remove any category with the Remove button."
+        stepLabel="4 of 4"
+        anchorTop={260}
+        onNext={async () => { await complete(user?.id); router.replace('/(tabs)'); }}
+        onSkip={async () => { await complete(user?.id); router.replace('/(tabs)'); }}
+        nextLabel="Done"
+      />
 
       <FilterModal
         visible={modalVisible}

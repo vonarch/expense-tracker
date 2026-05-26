@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useExpense } from '../../context/ExpenseContext';
+import { useAuth } from '../../context/AuthContext';
+import { useTour } from '../../context/TourContext';
+import TourTooltip from '../../components/TourTooltip';
 import SummaryChart from '../../components/SummaryChart';
 import TransactionCard from '../../components/TransactionCard';
 import GoalCard from '../../components/GoalCard';
@@ -9,9 +12,21 @@ import { formatCurrency } from '../../utils/formatters';
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const { tour } = useLocalSearchParams<{ tour?: string }>();
+  const { user } = useAuth();
   const { getDashboardStats, goals, isLoading } = useExpense();
+  const { step, start, next, complete } = useTour();
+
+  useEffect(() => {
+    if (tour === '1') start();
+  }, [tour]);
   const stats = getDashboardStats();
   const topGoals = goals.slice(0, 2);
+
+  const goToHistory = () => {
+    next('add');
+    router.push({ pathname: '/(tabs)/history', params: { tour: '1' } });
+  };
 
   if (isLoading) {
     return (
@@ -60,6 +75,17 @@ export default function DashboardScreen() {
         >
           <Text className="text-primary font-semibold">Add</Text>
         </TouchableOpacity>
+
+        <TourTooltip
+          visible={step === 'add'}
+          title="Add a Transaction"
+          body={'Tap "Add" to log any income or expense. Choose a category, enter the amount, and save — it appears instantly in your dashboard and history.'}
+          stepLabel="1 of 4"
+          anchorTop={230}
+          onNext={goToHistory}
+          onSkip={complete}
+        />
+        
         <TouchableOpacity
           onPress={() => router.push('/(tabs)/settings')}
           className="flex-1 bg-cardBackground py-3 rounded-xl items-center border border-border"
