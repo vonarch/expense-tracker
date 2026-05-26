@@ -83,12 +83,20 @@ export default function TransactionDetailScreen() {
           </View>
         </View>
 
-        <TouchableOpacity
-          onPress={handleDelete}
-          className="py-3 rounded-lg items-center border border-danger"
-        >
-          <Text className="text-danger font-semibold">Delete Transaction</Text>
-        </TouchableOpacity>
+        <View className="flex-row gap-3">
+          <TouchableOpacity
+            onPress={() => router.push(`/transaction/edit/${transaction.id}`)}
+            className="flex-1 py-3 rounded-lg items-center bg-primary"
+          >
+            <Text className="text-white font-semibold">Edit Transaction</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleDelete}
+            className="flex-1 py-3 rounded-lg items-center border border-danger"
+          >
+            <Text className="text-danger font-semibold">Delete Transaction</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </>
   );

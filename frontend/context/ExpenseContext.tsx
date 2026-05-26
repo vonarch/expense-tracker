@@ -29,6 +29,7 @@ interface ExpenseContextType {
   addCategory: (name: string, type: 'income' | 'expense') => Promise<void>;
   deleteCategory: (id: number) => Promise<void>;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
+  updateTransaction: (id: string, transaction: Omit<Transaction, 'id'>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
   searchTransactions: (query: string) => Transaction[];
   getTransactionsByPeriod: (period: DatePeriod, referenceDate?: Date) => Transaction[];
@@ -124,6 +125,14 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify(transaction),
     });
     setTransactions((prev) => [created, ...prev]);
+  }, []);
+
+  const updateTransaction = useCallback(async (id: string, transaction: Omit<Transaction, 'id'>) => {
+    const updated = await apiFetch<Transaction>(`/transactions/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(transaction),
+    });
+    setTransactions((prev) => prev.map((t) => (t.id === id ? updated : t)));
   }, []);
 
   const deleteTransaction = useCallback(async (id: string) => {
@@ -230,6 +239,7 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
       addCategory,
       deleteCategory,
       addTransaction,
+      updateTransaction,
       deleteTransaction,
       searchTransactions,
       getTransactionsByPeriod,
@@ -248,6 +258,7 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
       addCategory,
       deleteCategory,
       addTransaction,
+      updateTransaction,
       deleteTransaction,
       searchTransactions,
       getTransactionsByPeriod,

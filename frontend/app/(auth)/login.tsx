@@ -79,10 +79,12 @@ export default function LoginScreen() {
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}
         keyboardShouldPersistTaps="handled"
       >
+
         <Text className="text-3xl font-bold text-text mb-1">Expense Tracker</Text>
         <Text className="text-textLight mb-8">
           {isRegister ? 'Create your account' : 'Sign in to continue'}
         </Text>
+        {/* <Text className="text-textLight mb-8">Gwapoha nimo Sir oy</Text> */}
 
         {isRegister && (
           <>
@@ -96,7 +98,6 @@ export default function LoginScreen() {
             />
           </>
         )}
-
         <Text className="text-sm font-medium text-text mb-1">Email</Text>
         <TextInput
           className="bg-cardBackground border border-border rounded-lg px-4 py-3 mb-4 text-text"
@@ -115,7 +116,7 @@ export default function LoginScreen() {
           onChangeText={setPassword}
           secureTextEntry
         />
-
+        {/* 
         <TouchableOpacity
           onPress={handleTestConnection}
           disabled={testingConnection}
@@ -126,7 +127,7 @@ export default function LoginScreen() {
           ) : (
             <Text className="text-primary font-semibold">Test connection</Text>
           )}
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           onPress={handleSubmit}
@@ -150,13 +151,13 @@ export default function LoginScreen() {
           </Text>
         </TouchableOpacity>
 
-        <Text className="text-xs text-textLight text-center mt-6 px-2" selectable>
+        {/* <Text className="text-xs text-textLight text-center mt-6 px-2" selectable>
           API: {getApiBaseUrl()}
         </Text>
         <Text className="text-xs text-textLight text-center mt-2 px-2">
           If you see 10.0.2.2, that is wrong (emulator only). It should be 192.168.2.116.
           Restart Expo: npx expo start -c
-        </Text>
+        </Text> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );

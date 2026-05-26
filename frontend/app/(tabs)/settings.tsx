@@ -115,7 +115,7 @@ export default function SettingsScreen() {
       <Text className="text-sm text-textLight mx-4 mb-2">
         Signed in as {user?.name ?? user?.email}
       </Text>
-      <Text className="text-xs text-textLight mx-4 mb-6">API: {getApiBaseUrl()}</Text>
+      {/* <Text className="text-xs text-textLight mx-4 mb-6">API: {getApiBaseUrl()}</Text> */}
 
       <View className="bg-cardBackground mx-4 p-4 rounded-xl mb-4">
         <Text className="text-lg font-semibold text-text mb-1">Manage Categories</Text>
@@ -128,9 +128,8 @@ export default function SettingsScreen() {
             <TouchableOpacity
               key={t}
               onPress={() => setCategoryType(t)}
-              className={`flex-1 py-2 rounded-lg items-center ${
-                categoryType === t ? 'bg-primary' : 'bg-background border border-border'
-              }`}
+              className={`flex-1 py-2 rounded-lg items-center ${categoryType === t ? 'bg-primary' : 'bg-background border border-border'
+                }`}
             >
               <Text
                 className={
@@ -230,7 +229,7 @@ export default function SettingsScreen() {
               '• Long-press a transaction in History to delete it\n• Tap a goal to add funds\n• Long-press a goal to delete it\n• Add custom categories in Settings'
             )
           }
-className="mt-3"
+          className="mt-3"
         >
           <Text className="text-sm text-primary">View tips</Text>
         </TouchableOpacity>
