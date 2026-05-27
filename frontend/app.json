@@ -5,7 +5,11 @@
     "scheme": "expense-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -22,6 +26,7 @@
       }
     },
     "android": {
+      "package": "com.expensetracker.app",
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -43,6 +48,13 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "3930b36d-930f-40d4-a2cc-bb342cace83d"
+      }
+    },
+    "owner": "vonarch"
   }
 }
