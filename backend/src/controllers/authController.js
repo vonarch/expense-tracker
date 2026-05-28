@@ -4,7 +4,7 @@ const pool = require('../config/db');
 const { seedDefaultCategories } = require('../utils/seedCategories');
 
 const signToken = (user) =>
-  jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+  jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || 'fallback_secret_key_123', {
     expiresIn: '7d',
   });
 
